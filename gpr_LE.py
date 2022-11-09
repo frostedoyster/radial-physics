@@ -113,12 +113,35 @@ def get_LE_function(n, l, r):
 #     x = a*(1-np.exp(-factor*np.tan(np.pi*r/(2*a))))
 #     return x
 
-factor = 2.0
-a = 4.5
+
+a = 4.5 # this is already defined above
+rad_tr_selection_input = 1
+rad_tr_factor_input = 2.0
+
+def select_radial_transform(r, factor, a_input):
+    if rad_tr_selection_input == 1:
+        radial_transform = radial_transforms.radial_transform_1(r, factor, a)
+    elif rad_tr_selection_input == 2:
+        radial_transform = radial_transforms.radial_transform_2(r, factor, a)
+    elif rad_tr_selection_input == 3:
+        radial_transform = radial_transforms.radial_transform_3(r, factor, a)
+    elif rad_tr_selection_input == 4:
+        radial_transform = radial_transforms.radial_transform_4(r, factor, a)
+    elif rad_tr_selection_input == 5:
+        radial_transform = radial_transforms.radial_transform_5(r, factor, a)
+    elif rad_tr_selection_input == 6:
+        radial_transform = radial_transforms.radial_transform_6(r, factor, a)
+    elif rad_tr_selection_input == 7:
+        radial_transform = radial_transforms.radial_transform_7(r, factor, a)
+    elif rad_tr_selection_input == 8:
+        radial_transform = radial_transforms.radial_transform_8(r, factor, a)
+    else:
+        print('NO MATCHING RADIAL TRANSFORM FOUND')
+    return radial_transform
 
 def get_LE_radial_transform(n, l, r):
     # Calculates radially transformed LE radial basis function for a 1D array of values r.
-    x = radial_transforms.radial_transform_1(r, factor, a)
+    x = select_radial_transform(r, rad_tr_factor_input, a)
     return get_LE_function(n, l, x)
 
 # Feed LE (delta) radial spline points to Rust calculator:
