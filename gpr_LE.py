@@ -17,7 +17,6 @@ from validation import ValidationCycle
 from LE_ps import get_LE_ps
 
 import tqdm
-# from radial_transforms import *
 import radial_transforms
 
 from datetime import datetime
@@ -115,10 +114,11 @@ def get_LE_function(n, l, r):
 #     return x
 
 factor = 2.0
+a = 4.5
 
 def get_LE_radial_transform(n, l, r):
     # Calculates radially transformed LE radial basis function for a 1D array of values r.
-    x = radial_transforms.radial_transform_1(r,factor)
+    x = radial_transforms.radial_transform_1(r, factor, a)
     return get_LE_function(n, l, x)
 
 # Feed LE (delta) radial spline points to Rust calculator:
