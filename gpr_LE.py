@@ -22,6 +22,16 @@ import radial_transforms
 from datetime import datetime
 import os
 
+### HERE WE TAKE THE ARGUMENTS FROM OUR BASH SCRIPT and convert them to floats (if necessary)
+import sys
+main_name = sys.argv[0]
+a = float(sys.argv[1])
+print('a = ', a)
+rad_tr_selection = float(sys.argv[2])
+print('selected radial transform = ', rad_tr_selection)
+rad_tr_factor = float(sys.argv[3])
+print('factor = ', rad_tr_factor)
+
 date_time = datetime.now()
 date_time = date_time.strftime("%m-%d-%Y-%H-%M-%S-%f")
 spline_path = "splines/splines-" + date_time + ".txt"
@@ -75,7 +85,7 @@ def get_composition_features(frames, all_species):
     composition = TensorMap(Labels.single(), blocks=[block])
     return composition.block().values
 
-a = 4.5  # Radius of the sphere
+#a = 4.5  # Radius of the sphere
 E_max_2 = 400
 
 l_big = 26
@@ -114,26 +124,26 @@ def get_LE_function(n, l, r):
 #     return x
 
 
-a = 4.5 # this is already defined above
-rad_tr_selection_input = 1
-rad_tr_factor_input = 2.0
+#a = 4.5 # this is already defined above
+#rad_tr_selection = 1
+#rad_tr_factor = 2.0
 
-def select_radial_transform(r, factor, a_input):
-    if rad_tr_selection_input == 1:
+def select_radial_transform(r, factor, a):
+    if rad_tr_selection == 1:
         radial_transform = radial_transforms.radial_transform_1(r, factor, a)
-    elif rad_tr_selection_input == 2:
+    elif rad_tr_selection == 2:
         radial_transform = radial_transforms.radial_transform_2(r, factor, a)
-    elif rad_tr_selection_input == 3:
+    elif rad_tr_selection == 3:
         radial_transform = radial_transforms.radial_transform_3(r, factor, a)
-    elif rad_tr_selection_input == 4:
+    elif rad_tr_selection == 4:
         radial_transform = radial_transforms.radial_transform_4(r, factor, a)
-    elif rad_tr_selection_input == 5:
+    elif rad_tr_selection == 5:
         radial_transform = radial_transforms.radial_transform_5(r, factor, a)
-    elif rad_tr_selection_input == 6:
+    elif rad_tr_selection == 6:
         radial_transform = radial_transforms.radial_transform_6(r, factor, a)
-    elif rad_tr_selection_input == 7:
+    elif rad_tr_selection == 7:
         radial_transform = radial_transforms.radial_transform_7(r, factor, a)
-    elif rad_tr_selection_input == 8:
+    elif rad_tr_selection == 8:
         radial_transform = radial_transforms.radial_transform_8(r, factor, a)
     else:
         print('NO MATCHING RADIAL TRANSFORM FOUND')
@@ -141,7 +151,7 @@ def select_radial_transform(r, factor, a_input):
 
 def get_LE_radial_transform(n, l, r):
     # Calculates radially transformed LE radial basis function for a 1D array of values r.
-    x = select_radial_transform(r, rad_tr_factor_input, a)
+    x = select_radial_transform(r, rad_tr_factor, a)
     return get_LE_function(n, l, x)
 
 # Feed LE (delta) radial spline points to Rust calculator:
