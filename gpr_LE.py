@@ -18,12 +18,18 @@ from LE_ps import get_LE_ps
 
 import tqdm
 
+from datetime import datetime
+import os
+
+date_time = datetime.now()
+date_time = date_time.strftime("%m-%d-%Y-%H-%M-%S-%f")
+spline_path = "splines/splines-" + date_time + ".txt"
+
 # torch.set_default_dtype(torch.float64)
 # torch.manual_seed(1234)
 RANDOM_SEED = 1000
 np.random.seed(RANDOM_SEED)
 print(f"Random seed: {RANDOM_SEED}", flush = True)
-print("GPR LE")
 
 HARTREE_TO_EV = 27.211386245988
 HARTREE_TO_KCALMOL = 627.5
@@ -33,8 +39,8 @@ DATASET_PATH = 'datasets/random-ch4-10k.extxyz'
 TARGET_KEY = "energy" # "elec. Free Energy [eV]" # "U0"
 CONVERSION_FACTOR = HARTREE_TO_KCALMOL
 
-n_test = 500
-n_train = 500
+n_test = 100
+n_train = 100
 
 n_validation_splits = 10
 assert n_train % n_validation_splits == 0
@@ -142,11 +148,11 @@ for l in range(l_max+1):
 spline_df = np.array(spline_df).T
 spline_df = spline_df.reshape(n_spline_points, l_max+1, n_max)  # df/dx values
 
-with open("splines.txt", "w") as file:
+with open(spline_path, "w") as file:
     np.savetxt(file, spline_x.flatten(), newline=" ")
     file.write("\n")
 
-with open("splines.txt", "a") as file:
+with open(spline_path, "a") as file:
     np.savetxt(file, (1.0/(4.0*np.pi))*spline_f.flatten(), newline=" ")
     file.write("\n")
     np.savetxt(file, (1.0/(4.0*np.pi))*spline_df.flatten(), newline=" ")
@@ -155,8 +161,8 @@ with open("splines.txt", "a") as file:
 train_structures, test_structures = get_dataset_slices(DATASET_PATH, train_slice, test_slice)
 
 print("Calculating power spectrum", flush = True)
-train_ps = get_LE_ps(train_structures, "splines.txt", E_nl, E_max_2, a)
-test_ps = get_LE_ps(test_structures, "splines.txt", E_nl, E_max_2, a)
+train_ps = get_LE_ps(train_structures, spline_path, E_nl, E_max_2, a)
+test_ps = get_LE_ps(test_structures, spline_path, E_nl, E_max_2, a)
 
 all_species = np.unique(np.concatenate([train_ps.keys["a_i"], test_ps.keys["a_i"]]))
 
@@ -364,3 +370,6 @@ print()
 print("Final result (test MAE):")
 print(n_train, get_mae(test_predictions, test_energies).item())
 '''
+
+# Clean up the spline file:
+os.remove(spline_path)
