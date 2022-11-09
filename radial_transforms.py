@@ -2,7 +2,7 @@ import numpy as np
 
 # Radial transform functions
 
-a = 4.5 ### get this from input file!!!
+a = 4.5 ### get this from input file!
 
 def radial_transform_1(r,factor):
     # Function that defines the radial transform x = xi(r).
