@@ -18,18 +18,32 @@ from LE_ps import get_LE_ps
 
 import radial_transforms
 
+import tqdm # added this again for debug mode
+
 from datetime import datetime
 import os
 
-### HERE WE TAKE THE ARGUMENTS FROM OUR BASH SCRIPT (and convert them to floats, if necessary)
+###########################################
+###########################################
+### HERE WE DEFINE THE INPUTS PASSED AS ARGUMENTS FROM OUR BASH SCRIPT (and convert them to floats/int, if necessary)
 import sys
 main_name = sys.argv[0]
 a = float(sys.argv[1])
-print('a = ', a)
+print('Cutoff Radius = ', a)
 rad_tr_selection = float(sys.argv[2])
-print('selected radial transform = ', rad_tr_selection)
+print('Selected Radial Transform = ', rad_tr_selection)
 rad_tr_factor = float(sys.argv[3])
 print('factor = ', rad_tr_factor)
+DATASET_PATH = sys.argv[4]
+print('dataset = ', DATASET_PATH)
+TARGET_KEY = sys.argv[5]
+
+n_train = int(sys.argv[6])
+n_test = int(sys.argv[7])
+print('n_train = ', n_train)
+print('n_test = ', n_test)
+###########################################
+###########################################
 
 date_time = datetime.now()
 date_time = date_time.strftime("%m-%d-%Y-%H-%M-%S-%f")
@@ -44,13 +58,7 @@ print(f"Random seed: {RANDOM_SEED}", flush = True)
 HARTREE_TO_EV = 27.211386245988
 HARTREE_TO_KCALMOL = 627.5
 EV_TO_KCALMOL = HARTREE_TO_KCALMOL/HARTREE_TO_EV
-
-DATASET_PATH = 'datasets/random-ch4-10k.extxyz'
-TARGET_KEY = "energy" # "elec. Free Energy [eV]" # "U0"
 CONVERSION_FACTOR = HARTREE_TO_KCALMOL
-
-n_test = 100
-n_train = 100
 
 n_validation_splits = 10
 assert n_train % n_validation_splits == 0
@@ -248,9 +256,13 @@ def compute_kernel(first, second):
         center_kernel = first.block(a_i=center_species).values @ second.block(a_i=center_species).values.T
         center_kernel = center_kernel**2
 
-        for i_1 in range(len_first):
+
+        for i_1 in tqdm.tqdm(range(len_first)): ## Added this for debug mode
             for i_2 in range(len_second):
                 structure_kernel[structures_first[i_1], structures_second[i_2]] += center_kernel[i_1, i_2]
+        # for i_1 in range(len_first):
+        #     for i_2 in range(len_second):
+        #         structure_kernel[structures_first[i_1], structures_second[i_2]] += center_kernel[i_1, i_2]
 
     return structure_kernel
 
@@ -378,8 +390,8 @@ bounds = [(-20.0, 2.0)] #-10.0
 x0 = [-5.0]
 x0 = np.array(x0)
 solution = sp.optimize.dual_annealing(validation_loss_for_global_optimization, bounds = bounds, x0 = x0, no_local_search = True)
-print(solution.x)
-print(np.sqrt(solution.fun/n_train)) # n_train
+#print(solution.x)
+#print(np.sqrt(solution.fun/n_train)) # n_train
 
 best_sigma = np.exp(solution.x[-1]*np.log(10.0))
 
@@ -392,7 +404,7 @@ c = torch.linalg.solve(
 train_predictions = train_train_kernel.T @ c
 test_predictions = train_test_kernel.T @ c
 
-print("n_train:", n_train)
+#print("n_train:", n_train)
 print(f"Train RMSE: {get_rmse(train_predictions, train_energies).item()} [MAE: {get_mae(train_predictions, train_energies).item()}]")
 print(f"Test RMSE: {get_rmse(test_predictions, test_energies).item()} [MAE: {get_mae(test_predictions, test_energies).item()}]")
 '''
