@@ -228,7 +228,6 @@ def compute_kernel(first, second):
             )))
     
     structure_kernel = torch.zeros((n_first, n_second))
-    print(structure_kernel.shape)
   
     for center_species in all_species:
         # if center_species == 1: continue  # UNCOMMENT FOR METHANE DATASET C-ONLY VERSION
@@ -255,8 +254,12 @@ def compute_kernel(first, second):
 
     return structure_kernel
 
+print("Computing training kernel")
 train_train_kernel = compute_kernel(train_ps, train_ps)
+print("Training kernel done")
+print("Computing test kernel")
 train_test_kernel = compute_kernel(train_ps, test_ps)
+print("Test kernel done")
 
 train_train_kernel = train_train_kernel.data.cpu()
 train_test_kernel = train_test_kernel.data.cpu()
