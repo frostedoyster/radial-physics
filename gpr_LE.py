@@ -22,7 +22,7 @@ import radial_transforms
 from datetime import datetime
 import os
 
-### HERE WE TAKE THE ARGUMENTS FROM OUR BASH SCRIPT and convert them to floats (if necessary)
+### HERE WE TAKE THE ARGUMENTS FROM OUR BASH SCRIPT (and convert them to floats, if necessary)
 import sys
 main_name = sys.argv[0]
 a = float(sys.argv[1])
@@ -387,11 +387,12 @@ c = torch.linalg.solve(
     , 
     train_energies)
 
+train_predictions = train_train_kernel.T @ c
 test_predictions = train_test_kernel.T @ c
 
 print("n_train:", n_train)
-print(f"Test set RMSE: {get_rmse(test_predictions, test_energies).item()} [MAE: {get_mae(test_predictions, test_energies).item()}]")
-
+print(f"Train RMSE: {get_rmse(train_predictions, train_energies).item()} [MAE: {get_mae(train_predictions, train_energies).item()}]")
+print(f"Test RMSE: {get_rmse(test_predictions, test_energies).item()} [MAE: {get_mae(test_predictions, test_energies).item()}]")
 '''
 # Version for gradient-based local optimization
 c = torch.linalg.solve(
