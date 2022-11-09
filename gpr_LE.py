@@ -16,7 +16,6 @@ from validation import ValidationCycle
 
 from LE_ps import get_LE_ps
 
-import tqdm
 import radial_transforms
 
 from datetime import datetime
@@ -250,7 +249,7 @@ def compute_kernel(first, second):
         center_kernel = first.block(a_i=center_species).values @ second.block(a_i=center_species).values.T
         center_kernel = center_kernel**2
 
-        for i_1 in tqdm.tqdm(range(len_first)):
+        for i_1 in range(len_first):
             for i_2 in range(len_second):
                 structure_kernel[structures_first[i_1], structures_second[i_2]] += center_kernel[i_1, i_2]
 
