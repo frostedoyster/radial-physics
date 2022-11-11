@@ -18,6 +18,13 @@ from equistore import Labels, TensorBlock, TensorMap
 from dataset_processing import get_dataset_slices
 from dataset_bpnn import AtomisticDataset, create_dataloader
 
+from datetime import datetime
+import os
+
+date_time = datetime.now()
+date_time = date_time.strftime("%m-%d-%Y-%H-%M-%S-%f")
+spline_path = "splines/splines-" + date_time + ".txt"
+
 torch.set_num_threads(32)
 print("CUDA is available: ", torch.cuda.is_available())  # See if we can use a GPU
 if torch.cuda.is_available():
@@ -70,7 +77,7 @@ def get_composition_features(frames, all_species):
     return composition.block().values
 
 a = 4.5  # Radius of the sphere
-E_max_2 = 300.0
+E_max_2 = 600.0
 
 l_big = 26
 n_big = 26
@@ -103,7 +110,7 @@ def get_LE_function(n, l, r):
 # Radial transform
 def radial_transform(r):
     # Function that defines the radial transform x = xi(r).
-    factor = 2.0
+    factor = 1.4
     x = a*(1-np.exp(-factor*np.tan(np.pi*r/(2*a))))
     return x
 
@@ -143,11 +150,11 @@ for l in range(l_max+1):
 spline_df = np.array(spline_df).T
 spline_df = spline_df.reshape(n_spline_points, l_max+1, n_max)  # df/dx values
 
-with open("splines.txt", "w") as file:
+with open(spline_path, "w") as file:
     np.savetxt(file, spline_x.flatten(), newline=" ")
     file.write("\n")
 
-with open("splines.txt", "a") as file:
+with open(spline_path, "a") as file:
     np.savetxt(file, (1.0/(4.0*np.pi))*spline_f.flatten(), newline=" ")
     file.write("\n")
     np.savetxt(file, (1.0/(4.0*np.pi))*spline_df.flatten(), newline=" ")
@@ -192,7 +199,7 @@ hypers_spherical_expansion = {
         "max_radial": int(n_max),
         "max_angular": int(l_max),
         "center_atom_weight": 0.0,
-        "radial_basis": {"Tabulated": {"file": "splines.txt"}},
+        "radial_basis": {"Tabulated": {"file": spline_path}},
         "atomic_gaussian_width": 100.0,
         "cutoff_function": {"Step": {}},
     }
@@ -201,14 +208,20 @@ print("Creating datasets and dataloaders")
 train_dataset = AtomisticDataset(
     train_structures,
     all_species,
-    hypers=hypers_spherical_expansion,
+    spline_path, 
+    E_nl, 
+    E_max_2, 
+    a,
     energies=train_energies,
 )
 
 test_dataset = AtomisticDataset(
     test_structures,
     all_species,
-    hypers=hypers_spherical_expansion,
+    spline_path, 
+    E_nl, 
+    E_max_2, 
+    a,
     energies=test_energies,
 )
 
@@ -257,7 +270,7 @@ class Network(nn.Module):
         for species in all_species:
             NN_for_current_center_species = self.NNs[str(species)]
             try:
-                block = tensor_map.block(species_center=species)
+                block = tensor_map.block(a_i=species)
             except ValueError as e:
                 # print(f"Batch doesn't have element {species}")
                 continue
@@ -341,6 +354,7 @@ for irepeat in range(nrepeat):
     print(errmin)
     avgerr += errmin
 avgerr = avgerr/nrepeat
-with open("carbon-nn-LE-f1f2-large.dat", "a") as out:
-    out.write(str(n_train) + " " + str(nfeat) + " " + str(avgerr) + "\n")
+print("Final error (averaged over multiple runs):", avgerr)
 
+# Clean up the spline file:
+os.remove(spline_path)

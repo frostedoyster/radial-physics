@@ -5,6 +5,7 @@ import numpy as np
 import torch
 from equistore import Labels, TensorBlock, TensorMap
 from rascaline import SoapPowerSpectrum
+from LE_ps import get_LE_ps
 
 
 def _block_to_torch(block, structure_i):
@@ -57,7 +58,10 @@ class AtomisticDataset(torch.utils.data.Dataset):
         self,
         frames,
         all_species,
-        hypers,
+        spline_file, 
+        E_nl, 
+        E_max_2, 
+        rcut,
         energies,
     ):
         all_center_species = Labels(
@@ -73,14 +77,14 @@ class AtomisticDataset(torch.utils.data.Dataset):
             values=np.array(all_species, dtype=np.int32).reshape(-1, 1),
         )
 
-        calculator = SoapPowerSpectrum(**hypers)
         self.ps = []
         self.index_map = []
 
         for frame_i, frame in enumerate(frames):
-            ps_i = calculator.compute(frame)
-            ps_i.keys_to_properties(all_neighbor_species_1)
-            ps_i.keys_to_properties(all_neighbor_species_2)
+            if frame_i%100 == 0: print(frame_i)
+            ps_i = get_LE_ps(frame, spline_file, E_nl, E_max_2, rcut)
+            #ps_i.keys_to_properties(all_neighbor_species_1)
+            #ps_i.keys_to_properties(all_neighbor_species_2)
             self.ps.append(
                 _move_to_torch(ps_i, frame_i)
             )
