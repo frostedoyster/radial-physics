@@ -154,7 +154,15 @@ def select_radial_transform(r, factor, a, rad_tr_dis):
         radial_transform = radial_transforms.radial_transform_7(r, factor, a, rad_tr_dis)
     elif rad_tr_selection == 8:
         radial_transform = radial_transforms.radial_transform_8(r, factor, a, rad_tr_dis) 
-        # normalized versions below, names appended by 000
+    elif rad_tr_selection == 9:
+        radial_transform = radial_transforms.radial_transform_9(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 10:
+        radial_transform = radial_transforms.radial_transform_10(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 11:
+        radial_transform = radial_transforms.radial_transform_11(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 12:
+        radial_transform = radial_transforms.radial_transform_12(r, factor, a, rad_tr_dis)     
+    # normalized versions below, names appended by 000
     elif rad_tr_selection == 2000:
         radial_transform = radial_transforms.radial_transform_2000(r, factor, a)
     elif rad_tr_selection == 3000:
@@ -384,10 +392,8 @@ c = torch.linalg.solve(
     best_sigma * torch.eye(n_train)  # regularization
     , 
     train_energies)
-
 test_predictions = (train_test_kernel @ best_coefficients.squeeze(dim = 0)).T @ c
 print(f"Test set RMSE (after kernel mixing): {get_rmse(test_predictions, test_energies).item()}")
-
 print()
 print("Final result (test MAE):")
 print(n_train, get_mae(test_predictions, test_energies).item())
