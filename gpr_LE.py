@@ -42,6 +42,8 @@ n_train = int(sys.argv[6])
 n_test = int(sys.argv[7])
 print('n_train = ', n_train)
 print('n_test = ', n_test)
+
+rad_tr_displacement = float(sys.argv[8])
 ###########################################
 ###########################################
 
@@ -53,7 +55,7 @@ spline_path = "splines/splines-" + date_time + ".txt"
 # torch.manual_seed(1234)
 RANDOM_SEED = 1000
 np.random.seed(RANDOM_SEED)
-print(f"Random seed: {RANDOM_SEED}", flush = True)
+#print(f"Random seed: {RANDOM_SEED}", flush = True)
 
 HARTREE_TO_EV = 27.211386245988
 HARTREE_TO_KCALMOL = 627.5
@@ -93,7 +95,7 @@ def get_composition_features(frames, all_species):
     return composition.block().values
 
 #a = 4.5  # Radius of the sphere
-E_max_2 = 400
+E_max_2 = 400 # try 250 (lower resolution)
 
 l_big = 26
 n_big = 26
@@ -135,30 +137,41 @@ def get_LE_function(n, l, r):
 #rad_tr_selection = 1
 #rad_tr_factor = 2.0
 
-def select_radial_transform(r, factor, a):
+def select_radial_transform(r, factor, a, rad_tr_dis):
     if rad_tr_selection == 1:
-        radial_transform = radial_transforms.radial_transform_1(r, factor, a)
+        radial_transform = radial_transforms.radial_transform_1(r, factor, a, rad_tr_dis)
     elif rad_tr_selection == 2:
-        radial_transform = radial_transforms.radial_transform_2(r, factor, a)
+        radial_transform = radial_transforms.radial_transform_2(r, factor, a, rad_tr_dis)
     elif rad_tr_selection == 3:
-        radial_transform = radial_transforms.radial_transform_3(r, factor, a)
+        radial_transform = radial_transforms.radial_transform_3(r, factor, a, rad_tr_dis)
     elif rad_tr_selection == 4:
-        radial_transform = radial_transforms.radial_transform_4(r, factor, a)
+        radial_transform = radial_transforms.radial_transform_4(r, factor, a, rad_tr_dis)
     elif rad_tr_selection == 5:
-        radial_transform = radial_transforms.radial_transform_5(r, factor, a)
+        radial_transform = radial_transforms.radial_transform_5(r, factor, a, rad_tr_dis)
     elif rad_tr_selection == 6:
-        radial_transform = radial_transforms.radial_transform_6(r, factor, a)
+        radial_transform = radial_transforms.radial_transform_6(r, factor, a, rad_tr_dis)
     elif rad_tr_selection == 7:
-        radial_transform = radial_transforms.radial_transform_7(r, factor, a)
+        radial_transform = radial_transforms.radial_transform_7(r, factor, a, rad_tr_dis)
     elif rad_tr_selection == 8:
-        radial_transform = radial_transforms.radial_transform_8(r, factor, a)
+        radial_transform = radial_transforms.radial_transform_8(r, factor, a, rad_tr_dis) 
+        # normalized versions below, names appended by 000
+    elif rad_tr_selection == 2000:
+        radial_transform = radial_transforms.radial_transform_2000(r, factor, a)
+    elif rad_tr_selection == 3000:
+        radial_transform = radial_transforms.radial_transform_3000(r, factor, a)
+    elif rad_tr_selection == 4000:
+        radial_transform = radial_transforms.radial_transform_4000(r, factor, a)
+    elif rad_tr_selection == 7000:
+        radial_transform = radial_transforms.radial_transform_7000(r, factor, a)
+    elif rad_tr_selection == 8000:
+        radial_transform = radial_transforms.radial_transform_8000(r, factor, a)
     else:
         print('NO MATCHING RADIAL TRANSFORM FOUND')
     return radial_transform
 
 def get_LE_radial_transform(n, l, r):
     # Calculates radially transformed LE radial basis function for a 1D array of values r.
-    x = select_radial_transform(r, rad_tr_factor, a)
+    x = select_radial_transform(r, rad_tr_factor, a, rad_tr_displacement)
     return get_LE_function(n, l, x)
 
 # Feed LE (delta) radial spline points to Rust calculator:
@@ -424,4 +437,4 @@ print(n_train, get_mae(test_predictions, test_energies).item())
 '''
 
 # Clean up the spline file:
-os.remove(spline_path)
+#os.remove(spline_path) # do this in Bash script (if you cancel a job it will still get deleted eventually)
