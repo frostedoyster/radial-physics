@@ -11,7 +11,7 @@ from equistore import Labels, TensorBlock, TensorMap
 from rascaline import SoapPowerSpectrum
 
 from dataset_processing import get_dataset_slices
-from error_measures import get_sse, get_rmse, get_mae
+from error_measures import get_sse, get_rmse, get_mae, get_sae
 from validation import ValidationCycle
 
 from LE_ps import get_LE_ps
@@ -348,9 +348,16 @@ for alpha_exp in alpha_exp_list:
             continue
 
         validation_predictions = K_validation @ c_comp
-        validation_loss += get_sse(validation_predictions, y_validation).item()
 
-    validation_loss = np.sqrt(validation_loss/n_train)
+        if "qm9" in DATASET_PATH:  # optimize on the MAE for QM9
+            validation_loss += get_sae(validation_predictions, y_validation).item()
+        else:
+            validation_loss += get_sse(validation_predictions, y_validation).item()
+
+    if "qm9" in DATASET_PATH:
+        validation_loss = validation_loss/n_train
+    else:
+        validation_loss = np.sqrt(validation_loss/n_train)
     print(alpha_exp, validation_loss)
     target_list.append(validation_loss)
 
