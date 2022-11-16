@@ -11,7 +11,7 @@ from equistore import Labels, TensorBlock, TensorMap
 from rascaline import SoapPowerSpectrum
 
 from dataset_processing import get_dataset_slices
-from error_measures import get_sse, get_rmse, get_mae
+from error_measures import get_sse, get_rmse, get_mae, get_sae
 from validation import ValidationCycle
 
 from LE_ps import get_LE_ps
@@ -312,62 +312,10 @@ else:
     train_energies -= X_train @ c_comp
     test_energies -= X_test @ c_comp
 
-# Validation cycles to optimize kernel regularization and kernel mixing
-
-validation_cycle = ValidationCycle(alpha_exp_initial_guess = -5.0)
-
-print("Beginning hyperparameter optimization")
-
-'''
-# Gradient-based version:
-best_rmse = 1e20
-for i in range(1000):
-    optimizer.zero_grad()
-    validation_rmse = 0.0
-
-    for i_validation_split in range(n_validation_splits):
-        index_validation_start = i_validation_split*n_validation
-        index_validation_stop = index_validation_start + n_validation
-
-        K_train_sub = torch.empty((n_train_sub, n_train_sub, NU_MAX+1))
-        K_train_sub[:index_validation_start, :index_validation_start , :] = train_train_kernel[:index_validation_start, :index_validation_start , :]
-        if i_validation_split != n_validation_splits - 1:
-            K_train_sub[:index_validation_start, index_validation_start: , :] = train_train_kernel[:index_validation_start, index_validation_stop: , :]
-            K_train_sub[index_validation_start:, :index_validation_start , :] = train_train_kernel[index_validation_stop:, :index_validation_start , :]
-            K_train_sub[index_validation_start:, index_validation_start: , :] = train_train_kernel[index_validation_stop:, index_validation_stop: , :]
-        y_train_sub = train_energies[:index_validation_start]
-        if i_validation_split != n_validation_splits - 1:
-            y_train_sub = torch.concat([y_train_sub, train_energies[index_validation_stop:]])
-
-        K_validation = train_train_kernel[index_validation_start:index_validation_stop, :index_validation_start, :]
-        if i_validation_split != n_validation_splits - 1:
-            K_validation = torch.concat([K_validation, train_train_kernel[index_validation_start:index_validation_stop, index_validation_stop:, :]], dim = 1)
-        y_validation = train_energies[index_validation_start:index_validation_stop] 
-
-        validation_predictions = validation_cycle(K_train_sub, y_train_sub, K_validation)
-
-        with torch.no_grad():
-            validation_rmse += get_sse(validation_predictions, y_validation).item()
-
-        validation_loss = get_sse(validation_predictions, y_validation)
-        validation_loss.backward()
-    
-    validation_rmse = np.sqrt(validation_rmse/n_train)
-    if validation_rmse < best_rmse: 
-            best_rmse = validation_rmse
-            best_coefficients = copy.deepcopy(validation_cycle.coefficients.weight)
-            best_sigma = copy.deepcopy(torch.exp(validation_cycle.sigma_exponent.data*np.log(10.0)))
-    optimizer.step()
-
-    if i % 100 == 0:
-        print(best_rmse, best_coefficients, best_sigma, flush = True)
-
-'''
-def validation_loss_for_global_optimization(x):
-
-    validation_cycle.sigma_exponent = torch.nn.Parameter(
-            torch.tensor(x[-1], dtype = torch.get_default_dtype())
-            )
+# Validation to optimize kernel regularization
+target_list = []
+alpha_exp_list = np.linspace(-8, 4, 20)
+for alpha_exp in alpha_exp_list:    
 
     validation_loss = 0.0
     for i_validation_split in range(n_validation_splits):
@@ -389,8 +337,21 @@ def validation_loss_for_global_optimization(x):
             K_validation = torch.concat([K_validation, train_train_kernel[index_validation_start:index_validation_stop, index_validation_stop:]], dim = 1)
         y_validation = train_energies[index_validation_start:index_validation_stop] 
 
-        with torch.no_grad():
-            validation_predictions = validation_cycle(K_train_sub, y_train_sub, K_validation)
+        try:
+            c_comp = torch.linalg.solve(
+                K_train_sub +
+                10.0**alpha_exp * torch.eye(n_train_sub), 
+                y_train_sub
+            )
+        except:
+            target_list.append(1e30)
+            continue
+
+        validation_predictions = K_validation @ c_comp
+
+        if "qm9" in DATASET_PATH:  # optimize on the MAE for QM9
+            validation_loss += get_sae(validation_predictions, y_validation).item()
+        else:
             validation_loss += get_sse(validation_predictions, y_validation).item()
     '''
     with open("log.txt", "a") as out:
@@ -408,11 +369,22 @@ print(np.sqrt(solution.fun/n_train)) # n_train
 
 best_sigma = np.exp(solution.x[-1]*np.log(10.0))
 
+    if "qm9" in DATASET_PATH:
+        validation_loss = validation_loss/n_train
+    else:
+        validation_loss = np.sqrt(validation_loss/n_train)
+    print(alpha_exp, validation_loss)
+    target_list.append(validation_loss)
+
+best_alpha = alpha_exp_list[np.argmin(target_list)]
+print("Result sigma optimization: ", best_alpha, min(target_list))
+
 c = torch.linalg.solve(
     train_train_kernel +  # nu = 1, ..., 4 kernels
-    best_sigma * torch.eye(n_train)  # regularization
+    10**best_alpha * torch.eye(n_train)  # regularization
     , 
-    train_energies)
+    train_energies
+)
 
 train_predictions = train_train_kernel.T @ c
 test_predictions = train_test_kernel.T @ c
