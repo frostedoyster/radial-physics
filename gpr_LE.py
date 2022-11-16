@@ -403,8 +403,8 @@ bounds = [(-20.0, 2.0)] #-10.0
 x0 = [-5.0]
 x0 = np.array(x0)
 solution = sp.optimize.dual_annealing(validation_loss_for_global_optimization, bounds = bounds, x0 = x0, no_local_search = True)
-#print(solution.x)
-#print(np.sqrt(solution.fun/n_train)) # n_train
+print(solution.x)
+print(np.sqrt(solution.fun/n_train)) # n_train
 
 best_sigma = np.exp(solution.x[-1]*np.log(10.0))
 
