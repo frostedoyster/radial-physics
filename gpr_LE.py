@@ -17,10 +17,10 @@ from validation import ValidationCycle
 from LE_ps import get_LE_ps
 
 import radial_transforms
-
-import tqdm # added this again for debug mode
+import tqdm
 
 from datetime import datetime
+
 import os
 
 ###########################################
@@ -29,20 +29,12 @@ import os
 import sys
 main_name = sys.argv[0]
 a = float(sys.argv[1])
-print('Cutoff Radius = ', a)
 rad_tr_selection = float(sys.argv[2])
-print('Selected Radial Transform = ', rad_tr_selection)
 rad_tr_factor = float(sys.argv[3])
-print('factor = ', rad_tr_factor)
 DATASET_PATH = sys.argv[4]
-print('dataset = ', DATASET_PATH)
 TARGET_KEY = sys.argv[5]
-
 n_train = int(sys.argv[6])
 n_test = int(sys.argv[7])
-print('n_train = ', n_train)
-print('n_test = ', n_test)
-
 rad_tr_displacement = float(sys.argv[8])
 ###########################################
 ###########################################
@@ -55,7 +47,7 @@ spline_path = "splines/splines-" + date_time + ".txt"
 # torch.manual_seed(1234)
 RANDOM_SEED = 1000
 np.random.seed(RANDOM_SEED)
-#print(f"Random seed: {RANDOM_SEED}", flush = True)
+print(f"Random seed: {RANDOM_SEED}", flush = True)
 
 HARTREE_TO_EV = 27.211386245988
 HARTREE_TO_KCALMOL = 627.5
@@ -132,11 +124,6 @@ def get_LE_function(n, l, r):
 #     x = a*(1-np.exp(-factor*np.tan(np.pi*r/(2*a))))
 #     return x
 
-
-#a = 4.5 # this is already defined above
-#rad_tr_selection = 1
-#rad_tr_factor = 2.0
-
 def select_radial_transform(r, factor, a, rad_tr_dis):
     if rad_tr_selection == 1:
         radial_transform = radial_transforms.radial_transform_1(r, factor, a, rad_tr_dis)
@@ -154,7 +141,15 @@ def select_radial_transform(r, factor, a, rad_tr_dis):
         radial_transform = radial_transforms.radial_transform_7(r, factor, a, rad_tr_dis)
     elif rad_tr_selection == 8:
         radial_transform = radial_transforms.radial_transform_8(r, factor, a, rad_tr_dis) 
-        # normalized versions below, names appended by 000
+    elif rad_tr_selection == 9:
+        radial_transform = radial_transforms.radial_transform_9(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 10:
+        radial_transform = radial_transforms.radial_transform_10(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 11:
+        radial_transform = radial_transforms.radial_transform_11(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 12:
+        radial_transform = radial_transforms.radial_transform_12(r, factor, a, rad_tr_dis)     
+    # normalized versions below, names appended by 000
     elif rad_tr_selection == 2000:
         radial_transform = radial_transforms.radial_transform_2000(r, factor, a)
     elif rad_tr_selection == 3000:
@@ -314,7 +309,7 @@ else:
 
 # Validation to optimize kernel regularization
 target_list = []
-alpha_exp_list = np.linspace(-8, 4, 20)
+alpha_exp_list = np.linspace(-8, 4, 61)
 for alpha_exp in alpha_exp_list:    
 
     validation_loss = 0.0
@@ -344,7 +339,7 @@ for alpha_exp in alpha_exp_list:
                 y_train_sub
             )
         except:
-            target_list.append(1e30)
+            validation_loss += 1e30
             continue
 
         validation_predictions = K_validation @ c_comp
@@ -389,7 +384,18 @@ c = torch.linalg.solve(
 train_predictions = train_train_kernel.T @ c
 test_predictions = train_test_kernel.T @ c
 
-#print("n_train:", n_train)
+
+
+#HYPERPARAMS
+print('Cutoff Radius = ', a)
+print('Selected Radial Transform = ', rad_tr_selection)
+print('factor = ', rad_tr_factor)
+print('displacement = ', rad_tr_displacement)
+print('dataset = ', DATASET_PATH)
+print('n_train = ', n_train)
+print('n_test = ', n_test)
+
+#TRAIN & TEST RMSE
 print(f"Train RMSE: {get_rmse(train_predictions, train_energies).item()} [MAE: {get_mae(train_predictions, train_energies).item()}]")
 print(f"Test RMSE: {get_rmse(test_predictions, test_energies).item()} [MAE: {get_mae(test_predictions, test_energies).item()}]")
 '''
@@ -399,10 +405,8 @@ c = torch.linalg.solve(
     best_sigma * torch.eye(n_train)  # regularization
     , 
     train_energies)
-
 test_predictions = (train_test_kernel @ best_coefficients.squeeze(dim = 0)).T @ c
 print(f"Test set RMSE (after kernel mixing): {get_rmse(test_predictions, test_energies).item()}")
-
 print()
 print("Final result (test MAE):")
 print(n_train, get_mae(test_predictions, test_energies).item())
