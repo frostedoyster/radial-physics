@@ -1,0 +1,53 @@
+Cutoff Radius =  4.5
+Selected Radial Transform =  6.0
+factor =  0.95
+dataset =  datasets/qm9.xyz
+n_train =  1000
+n_test =  1000
+displacement =  0.0
+Random seed: 1000
+6 14
+Reading dataset
+Shuffling and extracting from dataset (length: 133885)
+Shuffling and extraction done
+Calculating power spectrum
+Expansion coefficients done
+Computing training kernel
+     Calculating kernels for center species 1
+     Calculating kernels for center species 6
+     Calculating kernels for center species 7
+     Calculating kernels for center species 8
+     Calculating kernels for center species 9
+Training kernel done
+Computing test kernel
+     Calculating kernels for center species 1
+     Calculating kernels for center species 6
+     Calculating kernels for center species 7
+     Calculating kernels for center species 8
+     Calculating kernels for center species 9
+Test kernel done
+Calculating composition features
+Composition features done
+-8.0 5.103214111328125
+-7.368421052631579 6.246238800048828
+-6.7368421052631575 5.114955902099609
+-6.105263157894737 5.08135806274414
+-5.473684210526316 5.0845205078125
+-4.842105263157895 5.085540740966797
+-4.210526315789474 5.085581207275391
+-3.578947368421053 5.085631469726563
+-2.947368421052632 5.0856343994140625
+-2.3157894736842106 5.085770111083985
+-1.6842105263157894 5.08666372680664
+-1.052631578947369 5.101381652832031
+-0.4210526315789478 5.206058807373047
+0.21052631578947256 5.724455200195313
+0.8421052631578938 7.129974548339844
+1.473684210526315 9.420224487304688
+2.1052631578947363 12.497017944335937
+2.7368421052631575 15.644972534179688
+3.3684210526315788 17.969409423828125
+4.0 19.200117919921876
+Result sigma optimization:  -6.105263157894737 5.08135806274414
+Train RMSE: 0.023363661020994186 [MAE: 0.015486782416701317]
+Test RMSE: 6.441660404205322 [MAE: 4.547762870788574]

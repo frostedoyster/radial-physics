@@ -1,0 +1,7 @@
+#!/bin/bash
+rm results
+touch results
+while read p; do
+  echo "$p" >> results
+  grep "RMSE" "$p" >>results
+done <names
