@@ -18,8 +18,28 @@ from equistore import Labels, TensorBlock, TensorMap
 from dataset_processing import get_dataset_slices
 from dataset_bpnn import AtomisticDataset, create_dataloader
 
+import tqdm
+
+import radial_transforms
+
 from datetime import datetime
 import os
+
+###########################################
+###########################################
+### HERE WE DEFINE THE INPUTS PASSED AS ARGUMENTS FROM OUR BASH SCRIPT (and convert them to floats/int, if necessary)
+import sys
+main_name = sys.argv[0]
+a = float(sys.argv[1])
+rad_tr_selection = float(sys.argv[2])
+rad_tr_factor = float(sys.argv[3])
+DATASET_PATH = sys.argv[4]
+TARGET_KEY = sys.argv[5]
+n_train = int(sys.argv[6])
+n_test = int(sys.argv[7])
+rad_tr_displacement = float(sys.argv[8])
+###########################################
+###########################################
 
 date_time = datetime.now()
 date_time = date_time.strftime("%m-%d-%Y-%H-%M-%S-%f")
@@ -107,16 +127,56 @@ def get_LE_function(n, l, r):
         R[i] = R_nl(n, l, r[i])
     return N_nl(n, l)*R*a**(-1.5)
 
-# Radial transform
-def radial_transform(r):
-    # Function that defines the radial transform x = xi(r).
-    factor = 1.4
-    x = a*(1-np.exp(-factor*np.tan(np.pi*r/(2*a))))
-    return x
+# # Radial transform
+# def radial_transform(r):
+#     # Function that defines the radial transform x = xi(r).
+#     factor = 1.4
+#     x = a*(1-np.exp(-factor*np.tan(np.pi*r/(2*a))))
+#     return x
+
+def select_radial_transform(r, factor, a, rad_tr_dis):
+    if rad_tr_selection == 1:
+        radial_transform = radial_transforms.radial_transform_1(r, factor, a, rad_tr_dis)
+    elif rad_tr_selection == 2:
+        radial_transform = radial_transforms.radial_transform_2(r, factor, a, rad_tr_dis)
+    elif rad_tr_selection == 3:
+        radial_transform = radial_transforms.radial_transform_3(r, factor, a, rad_tr_dis)
+    elif rad_tr_selection == 4:
+        radial_transform = radial_transforms.radial_transform_4(r, factor, a, rad_tr_dis)
+    elif rad_tr_selection == 5:
+        radial_transform = radial_transforms.radial_transform_5(r, factor, a, rad_tr_dis)
+    elif rad_tr_selection == 6:
+        radial_transform = radial_transforms.radial_transform_6(r, factor, a, rad_tr_dis)
+    elif rad_tr_selection == 7:
+        radial_transform = radial_transforms.radial_transform_7(r, factor, a, rad_tr_dis)
+    elif rad_tr_selection == 8:
+        radial_transform = radial_transforms.radial_transform_8(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 9:
+        radial_transform = radial_transforms.radial_transform_9(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 10:
+        radial_transform = radial_transforms.radial_transform_10(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 11:
+        radial_transform = radial_transforms.radial_transform_11(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 12:
+        radial_transform = radial_transforms.radial_transform_12(r, factor, a, rad_tr_dis)     
+    # normalized versions below, names appended by 000
+    elif rad_tr_selection == 2000:
+        radial_transform = radial_transforms.radial_transform_2000(r, factor, a)
+    elif rad_tr_selection == 3000:
+        radial_transform = radial_transforms.radial_transform_3000(r, factor, a)
+    elif rad_tr_selection == 4000:
+        radial_transform = radial_transforms.radial_transform_4000(r, factor, a)
+    elif rad_tr_selection == 7000:
+        radial_transform = radial_transforms.radial_transform_7000(r, factor, a)
+    elif rad_tr_selection == 8000:
+        radial_transform = radial_transforms.radial_transform_8000(r, factor, a)
+    else:
+        print('NO MATCHING RADIAL TRANSFORM FOUND')
+    return radial_transform
 
 def get_LE_radial_transform(n, l, r):
     # Calculates radially transformed LE radial basis function for a 1D array of values r.
-    x = radial_transform(r)
+    x = select_radial_transform(r, rad_tr_factor, a, rad_tr_displacement)
     return get_LE_function(n, l, x)
 
 # Feed LE (delta) radial spline points to Rust calculator:
@@ -245,6 +305,7 @@ print(f"nfeat: {nfeat}")
 
 nrepeat = 10
 avgerr = 0.0
+train_avgerr = 0.0
 nlayers = 3
 nneurons = [32, 32, 32]
 assert nlayers == len(nneurons)
@@ -303,8 +364,9 @@ for irepeat in range(nrepeat):
 
 
     errmin = 10000000.0
+    train_errmin = 10000000.0
     best_params = {}
-    for epoch in range(10000):
+    for epoch in tqdm.tqdm(range(10000)):
         initial_time = time.time()
 
         for ps, energies, original_indices in train_dataloader:
@@ -336,7 +398,12 @@ for irepeat in range(nrepeat):
             errmin = test_loss
             for name, params in network.named_parameters():
                 best_params[name] = params.clone()
-        
+    
+        if (train_loss <= train_errmin):
+            train_errmin = train_loss
+            for name, params in network.named_parameters():
+                best_params[name] = params.clone()    
+    
         lr = optimizer.param_groups[0]["lr"]  # This appears to be making a deep copy, for whatever reason (probably copying from GPU to CPU).
         # np.set_printoptions(precision=3)  # If this is not set the default precision will be 4 and torch.float64 numbers will look like float32 numbers.
         print(repr((epoch+1)).rjust(6), repr(train_loss).rjust(20), repr(test_loss).rjust(20), lr, time.time()-initial_time, flush = "True")
@@ -351,10 +418,27 @@ for irepeat in range(nrepeat):
             optimizer = optim.Adam(network.parameters(), lr = lr*0.1)  # Reinitialise Adam so that it resets the moment vectors.
             scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', threshold = 1e-5, eps = 1e-12, patience = 50, verbose = True)  # Also reinitialise scheduler just in case.
 
-    print(errmin)
+    print(f'Train error minimum for model run no. {irepeat+1}: ', train_errmin)
+    train_avgerr += train_errmin
+    print(f'Test error minimum for model run no. {irepeat+1}: ', errmin)
     avgerr += errmin
 avgerr = avgerr/nrepeat
-print("Final error (averaged over multiple runs):", avgerr)
+train_avgerr = train_avgerr/nrepeat
+
+
+
+#HYPERPARAMS
+print('Cutoff Radius = ', a)
+print('Selected Radial Transform = ', rad_tr_selection)
+print('factor = ', rad_tr_factor)
+print('displacement = ', rad_tr_displacement)
+print('dataset = ', DATASET_PATH)
+print('n_train = ', n_train)
+print('n_test = ', n_test)
+
+#TRAIN & TEST RMSE
+print('Train error averaged over all models Train MSE: ', train_avgerr)
+print('Test error averaged over all models Test MSE: ', avgerr)
 
 # Clean up the spline file:
 os.remove(spline_path)
