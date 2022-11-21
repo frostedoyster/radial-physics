@@ -20,7 +20,6 @@ import radial_transforms
 import tqdm
 
 from datetime import datetime
-
 import os
 
 ###########################################
@@ -348,21 +347,6 @@ for alpha_exp in alpha_exp_list:
             validation_loss += get_sae(validation_predictions, y_validation).item()
         else:
             validation_loss += get_sse(validation_predictions, y_validation).item()
-    '''
-    with open("log.txt", "a") as out:
-        out.write(str(np.sqrt(validation_loss/n_train)) + "\n")
-        out.flush()
-    '''
-    return validation_loss
-
-bounds = [(-20.0, 2.0)] #-10.0
-x0 = [-5.0]
-x0 = np.array(x0)
-solution = sp.optimize.dual_annealing(validation_loss_for_global_optimization, bounds = bounds, x0 = x0, no_local_search = True)
-print(solution.x)
-print(np.sqrt(solution.fun/n_train)) # n_train
-
-best_sigma = np.exp(solution.x[-1]*np.log(10.0))
 
     if "qm9" in DATASET_PATH:
         validation_loss = validation_loss/n_train
