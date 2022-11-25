@@ -25,7 +25,7 @@ DATA_SET=${TEMP_VAR//.*} # just some string manipulations
 
 # AUTOMATIC OUTPUT FILE NAME:
 OUTPUT_NAME='TR'$RAD_TR_SELECTION'_F'$RAD_TR_FACTOR'_D'$RAD_TR_DISPLACEMENT'_E'$E_MAX_2'_'$N_TRAIN_TEST'_a'$CUTOFF_RADIUS'_'$DATA_SET.out
-OUTPUT_PATH='/home/ach/radial-physics_new/radial-physics/output/tests'
+OUTPUT_PATH='/home/ach/radial-physics_new/radial-physics/output/new_tr'
 
 # module load gcc
 # module load python

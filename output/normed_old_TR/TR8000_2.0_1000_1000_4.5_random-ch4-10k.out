@@ -1,0 +1,28 @@
+STARTING AT Fri Nov 11 02:42:17 CET 2022
+Cutoff Radius =  4.5
+Selected Radial Transform =  8000.0
+factor =  2.0
+dataset =  datasets/random-ch4-10k.extxyz
+n_train =  1000
+n_test =  1000
+Random seed: 1000
+6 14
+Reading dataset
+Shuffling and extracting from dataset (length: 10000)
+Shuffling and extraction done
+Calculating power spectrum
+Expansion coefficients done
+Computing training kernel
+     Calculating kernels for center species 1
+     Calculating kernels for center species 6
+Training kernel done
+Computing test kernel
+     Calculating kernels for center species 1
+     Calculating kernels for center species 6
+Test kernel done
+Calculating composition features
+Composition features done
+Beginning hyperparameter optimization
+Train RMSE: 8.227267265319824 [MAE: 5.816456317901611]
+Test RMSE: 28.95017433166504 [MAE: 12.93004035949707]
+FINISHED at Fri Nov 11 02:51:09 CET 2022
