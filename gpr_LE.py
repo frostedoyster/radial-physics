@@ -20,7 +20,6 @@ import radial_transforms
 import tqdm
 
 from datetime import datetime
-
 import os
 
 ###########################################
@@ -34,7 +33,8 @@ rad_tr_factor = float(sys.argv[3])
 DATASET_PATH = sys.argv[4]
 TARGET_KEY = sys.argv[5]
 n_train = int(sys.argv[6])
-n_test = int(sys.argv[7])
+n_test = int(sys.argv[6])
+E_max_2 = int(sys.argv[7])
 rad_tr_displacement = float(sys.argv[8])
 ###########################################
 ###########################################
@@ -87,7 +87,7 @@ def get_composition_features(frames, all_species):
     return composition.block().values
 
 #a = 4.5  # Radius of the sphere
-E_max_2 = 400 # try 250 (lower resolution)
+# E_max_2 = 400 # try 250 (lower resolution)
 
 l_big = 26
 n_big = 26
@@ -124,49 +124,9 @@ def get_LE_function(n, l, r):
 #     x = a*(1-np.exp(-factor*np.tan(np.pi*r/(2*a))))
 #     return x
 
-def select_radial_transform(r, factor, a, rad_tr_dis):
-    if rad_tr_selection == 1:
-        radial_transform = radial_transforms.radial_transform_1(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 2:
-        radial_transform = radial_transforms.radial_transform_2(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 3:
-        radial_transform = radial_transforms.radial_transform_3(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 4:
-        radial_transform = radial_transforms.radial_transform_4(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 5:
-        radial_transform = radial_transforms.radial_transform_5(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 6:
-        radial_transform = radial_transforms.radial_transform_6(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 7:
-        radial_transform = radial_transforms.radial_transform_7(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 8:
-        radial_transform = radial_transforms.radial_transform_8(r, factor, a, rad_tr_dis) 
-    elif rad_tr_selection == 9:
-        radial_transform = radial_transforms.radial_transform_9(r, factor, a, rad_tr_dis) 
-    elif rad_tr_selection == 10:
-        radial_transform = radial_transforms.radial_transform_10(r, factor, a, rad_tr_dis) 
-    elif rad_tr_selection == 11:
-        radial_transform = radial_transforms.radial_transform_11(r, factor, a, rad_tr_dis) 
-    elif rad_tr_selection == 12:
-        radial_transform = radial_transforms.radial_transform_12(r, factor, a, rad_tr_dis)     
-    # normalized versions below, names appended by 000
-    elif rad_tr_selection == 2000:
-        radial_transform = radial_transforms.radial_transform_2000(r, factor, a)
-    elif rad_tr_selection == 3000:
-        radial_transform = radial_transforms.radial_transform_3000(r, factor, a)
-    elif rad_tr_selection == 4000:
-        radial_transform = radial_transforms.radial_transform_4000(r, factor, a)
-    elif rad_tr_selection == 7000:
-        radial_transform = radial_transforms.radial_transform_7000(r, factor, a)
-    elif rad_tr_selection == 8000:
-        radial_transform = radial_transforms.radial_transform_8000(r, factor, a)
-    else:
-        print('NO MATCHING RADIAL TRANSFORM FOUND')
-    return radial_transform
-
-def get_LE_radial_transform(n, l, r):
+def get_LE_radial_transform(n, l, r, rad_tr_selection):
     # Calculates radially transformed LE radial basis function for a 1D array of values r.
-    x = select_radial_transform(r, rad_tr_factor, a, rad_tr_displacement)
+    x = radial_transforms.select_radial_transform(r, rad_tr_factor, a, rad_tr_displacement, rad_tr_selection)
     return get_LE_function(n, l, x)
 
 # Feed LE (delta) radial spline points to Rust calculator:
@@ -175,7 +135,7 @@ n_spline_points = 101
 spline_x = np.linspace(0.0, a, n_spline_points)  # x values
 
 def function_for_splining(n, l, x):
-    return get_LE_radial_transform(n, l, x)
+    return get_LE_radial_transform(n, l, x, rad_tr_selection)
 
 spline_f = []
 for l in range(l_max+1):
@@ -348,21 +308,6 @@ for alpha_exp in alpha_exp_list:
             validation_loss += get_sae(validation_predictions, y_validation).item()
         else:
             validation_loss += get_sse(validation_predictions, y_validation).item()
-    '''
-    with open("log.txt", "a") as out:
-        out.write(str(np.sqrt(validation_loss/n_train)) + "\n")
-        out.flush()
-    '''
-    return validation_loss
-
-bounds = [(-20.0, 2.0)] #-10.0
-x0 = [-5.0]
-x0 = np.array(x0)
-solution = sp.optimize.dual_annealing(validation_loss_for_global_optimization, bounds = bounds, x0 = x0, no_local_search = True)
-print(solution.x)
-print(np.sqrt(solution.fun/n_train)) # n_train
-
-best_sigma = np.exp(solution.x[-1]*np.log(10.0))
 
     if "qm9" in DATASET_PATH:
         validation_loss = validation_loss/n_train
@@ -387,6 +332,7 @@ test_predictions = train_test_kernel.T @ c
 
 
 #HYPERPARAMS
+print('E_max_2 = ', E_max_2)
 print('Cutoff Radius = ', a)
 print('Selected Radial Transform = ', rad_tr_selection)
 print('factor = ', rad_tr_factor)
@@ -396,8 +342,8 @@ print('n_train = ', n_train)
 print('n_test = ', n_test)
 
 #TRAIN & TEST RMSE
-print(f"Train RMSE: {get_rmse(train_predictions, train_energies).item()} [MAE: {get_mae(train_predictions, train_energies).item()}]")
-print(f"Test RMSE: {get_rmse(test_predictions, test_energies).item()} [MAE: {get_mae(test_predictions, test_energies).item()}]")
+print(f"Train RMSE: {get_rmse(train_predictions, train_energies).item()} [Train MAE: {get_mae(train_predictions, train_energies).item()}]")
+print(f"Test RMSE: {get_rmse(test_predictions, test_energies).item()} [Test MAE: {get_mae(test_predictions, test_energies).item()}]")
 '''
 # Version for gradient-based local optimization
 c = torch.linalg.solve(

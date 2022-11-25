@@ -19,7 +19,7 @@ from dataset_processing import get_dataset_slices
 from dataset_bpnn import AtomisticDataset, create_dataloader
 
 import tqdm
-
+import error_measures
 import radial_transforms
 
 from datetime import datetime
@@ -36,7 +36,8 @@ rad_tr_factor = float(sys.argv[3])
 DATASET_PATH = sys.argv[4]
 TARGET_KEY = sys.argv[5]
 n_train = int(sys.argv[6])
-n_test = int(sys.argv[7])
+n_test = int(sys.argv[6])
+E_max_2 = int(sys.argv[7])
 rad_tr_displacement = float(sys.argv[8])
 ###########################################
 ###########################################
@@ -66,8 +67,8 @@ DATASET_PATH = 'datasets/random-ch4-10k.extxyz'
 TARGET_KEY = "energy" # "elec. Free Energy [eV]" # "U0"
 CONVERSION_FACTOR = HARTREE_TO_KCALMOL
 
-n_test = 1000
-n_train = 1000
+# n_test = 1000
+# n_train = 1000
 
 test_slice = str(0) + ":" + str(n_test)
 train_slice = str(n_test) + ":" + str(n_test+n_train)
@@ -96,8 +97,8 @@ def get_composition_features(frames, all_species):
     composition = TensorMap(Labels.single(), blocks=[block])
     return composition.block().values
 
-a = 4.5  # Radius of the sphere
-E_max_2 = 600.0
+# a = 4.5  # Radius of the sphere
+# E_max_2 = 600.0
 
 l_big = 26
 n_big = 26
@@ -134,49 +135,9 @@ def get_LE_function(n, l, r):
 #     x = a*(1-np.exp(-factor*np.tan(np.pi*r/(2*a))))
 #     return x
 
-def select_radial_transform(r, factor, a, rad_tr_dis):
-    if rad_tr_selection == 1:
-        radial_transform = radial_transforms.radial_transform_1(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 2:
-        radial_transform = radial_transforms.radial_transform_2(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 3:
-        radial_transform = radial_transforms.radial_transform_3(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 4:
-        radial_transform = radial_transforms.radial_transform_4(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 5:
-        radial_transform = radial_transforms.radial_transform_5(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 6:
-        radial_transform = radial_transforms.radial_transform_6(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 7:
-        radial_transform = radial_transforms.radial_transform_7(r, factor, a, rad_tr_dis)
-    elif rad_tr_selection == 8:
-        radial_transform = radial_transforms.radial_transform_8(r, factor, a, rad_tr_dis) 
-    elif rad_tr_selection == 9:
-        radial_transform = radial_transforms.radial_transform_9(r, factor, a, rad_tr_dis) 
-    elif rad_tr_selection == 10:
-        radial_transform = radial_transforms.radial_transform_10(r, factor, a, rad_tr_dis) 
-    elif rad_tr_selection == 11:
-        radial_transform = radial_transforms.radial_transform_11(r, factor, a, rad_tr_dis) 
-    elif rad_tr_selection == 12:
-        radial_transform = radial_transforms.radial_transform_12(r, factor, a, rad_tr_dis)     
-    # normalized versions below, names appended by 000
-    elif rad_tr_selection == 2000:
-        radial_transform = radial_transforms.radial_transform_2000(r, factor, a)
-    elif rad_tr_selection == 3000:
-        radial_transform = radial_transforms.radial_transform_3000(r, factor, a)
-    elif rad_tr_selection == 4000:
-        radial_transform = radial_transforms.radial_transform_4000(r, factor, a)
-    elif rad_tr_selection == 7000:
-        radial_transform = radial_transforms.radial_transform_7000(r, factor, a)
-    elif rad_tr_selection == 8000:
-        radial_transform = radial_transforms.radial_transform_8000(r, factor, a)
-    else:
-        print('NO MATCHING RADIAL TRANSFORM FOUND')
-    return radial_transform
-
-def get_LE_radial_transform(n, l, r):
+def get_LE_radial_transform(n, l, r, rad_tr_selection):
     # Calculates radially transformed LE radial basis function for a 1D array of values r.
-    x = select_radial_transform(r, rad_tr_factor, a, rad_tr_displacement)
+    x = radial_transforms.select_radial_transform(r, rad_tr_factor, a, rad_tr_displacement, rad_tr_selection)
     return get_LE_function(n, l, x)
 
 # Feed LE (delta) radial spline points to Rust calculator:
@@ -185,7 +146,7 @@ n_spline_points = 101
 spline_x = np.linspace(0.0, a, n_spline_points)  # x values
 
 def function_for_splining(n, l, x):
-    return get_LE_function(n, l, x)
+    return get_LE_radial_transform(n, l, x, rad_tr_selection)
 
 spline_f = []
 for l in range(l_max+1):
@@ -306,6 +267,8 @@ print(f"nfeat: {nfeat}")
 nrepeat = 10
 avgerr = 0.0
 train_avgerr = 0.0
+avgerr_mae = 0.0
+train_avgerr_mae = 0.0
 nlayers = 3
 nneurons = [32, 32, 32]
 assert nlayers == len(nneurons)
@@ -364,7 +327,9 @@ for irepeat in range(nrepeat):
 
 
     errmin = 10000000.0
+    errmin_mae = 10000000.0
     train_errmin = 10000000.0
+    train_errmin_mae = 10000000.0
     best_params = {}
     for epoch in tqdm.tqdm(range(10000)):
         initial_time = time.time()
@@ -381,21 +346,32 @@ for irepeat in range(nrepeat):
         if epoch % 1 == 0:
             with torch.no_grad():
                 train_loss = 0.0
+                train_mae = 0.0
                 for ps, energies, original_indices in train_dataloader:
                     predictions = network(ps, original_indices)
-                    # print(predictions.requires_grad)
+                    #print(predictions.requires_grad)
                     train_loss += F.mse_loss(predictions, energies, reduction='sum').item()
+                    train_mae+= error_measures.get_sae(predictions, energies).item()
                 train_loss = np.sqrt(train_loss/n_train)
+                train_mae=train_mae/n_train
             with torch.no_grad():
                 test_loss = 0.0
+                test_mae = 0.0
                 for ps, energies, original_indices in test_dataloader:
                     predictions = network(ps, original_indices)
                     # print(predictions.requires_grad)
                     test_loss += F.mse_loss(predictions, energies, reduction='sum').item()
+                    test_mae += error_measures.get_sae(predictions, energies).item()
                 test_loss = np.sqrt(test_loss/n_test)
+                test_mae = test_mae/n_test
 
         if (test_loss <= errmin):
             errmin = test_loss
+            for name, params in network.named_parameters():
+                best_params[name] = params.clone()
+        
+        if (test_mae <= errmin_mae):
+            errmin_mae = test_mae
             for name, params in network.named_parameters():
                 best_params[name] = params.clone()
     
@@ -403,10 +379,15 @@ for irepeat in range(nrepeat):
             train_errmin = train_loss
             for name, params in network.named_parameters():
                 best_params[name] = params.clone()    
+
+        if (train_mae <= train_errmin_mae):
+            train_errmin_mae = train_mae
+            for name, params in network.named_parameters():
+                best_params[name] = params.clone()
     
         lr = optimizer.param_groups[0]["lr"]  # This appears to be making a deep copy, for whatever reason (probably copying from GPU to CPU).
         # np.set_printoptions(precision=3)  # If this is not set the default precision will be 4 and torch.float64 numbers will look like float32 numbers.
-        print(repr((epoch+1)).rjust(6), repr(train_loss).rjust(20), repr(test_loss).rjust(20), lr, time.time()-initial_time, flush = "True")
+        #print(repr((epoch+1)).rjust(6), repr(train_loss).rjust(20), repr(test_loss).rjust(20), lr, time.time()-initial_time, flush = "True")
 
         scheduler.step(test_loss)
         if (optimizer.param_groups[0]["lr"] <= 2e-12):
@@ -418,16 +399,20 @@ for irepeat in range(nrepeat):
             optimizer = optim.Adam(network.parameters(), lr = lr*0.1)  # Reinitialise Adam so that it resets the moment vectors.
             scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', threshold = 1e-5, eps = 1e-12, patience = 50, verbose = True)  # Also reinitialise scheduler just in case.
 
-    print(f'Train error minimum for model run no. {irepeat+1}: ', train_errmin)
+    print(f'Train error minimum for model run no. {irepeat+1}: {train_errmin} [MAE: {train_errmin_mae}]')
     train_avgerr += train_errmin
-    print(f'Test error minimum for model run no. {irepeat+1}: ', errmin)
+    train_avgerr_mae += train_errmin_mae
+    print(f'Test error minimum for model run no. {irepeat+1}:  {errmin} [MAE: {errmin_mae}]')
     avgerr += errmin
+    avgerr_mae += errmin_mae
 avgerr = avgerr/nrepeat
 train_avgerr = train_avgerr/nrepeat
-
+avgerr_mae = avgerr_mae/nrepeat
+train_avgerr_mae = train_avgerr_mae/nrepeat
 
 
 #HYPERPARAMS
+print('E_max_2 = ', E_max_2)
 print('Cutoff Radius = ', a)
 print('Selected Radial Transform = ', rad_tr_selection)
 print('factor = ', rad_tr_factor)
@@ -437,8 +422,8 @@ print('n_train = ', n_train)
 print('n_test = ', n_test)
 
 #TRAIN & TEST RMSE
-print('Train error averaged over all models Train MSE: ', train_avgerr)
-print('Test error averaged over all models Test MSE: ', avgerr)
+print(f'Train error averaged over all models Train RMSE:  {train_avgerr} [Train MAE: {train_avgerr_mae}]')
+print(f'Test error averaged over all models Test RMSE: {avgerr} [Test MAE: {avgerr_mae}]')
 
 # Clean up the spline file:
-os.remove(spline_path)
+# os.remove(spline_path)
