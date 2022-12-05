@@ -52,7 +52,7 @@ def get_LE_expansion(structures, spline_file: string, E_nl, E_max, rcut) -> Tens
             "cutoff": rcut,
             "max_radial": int(n_max),
             "max_angular": int(l_max),
-            "center_atom_weight": 0.0,
+            "center_atom_weight": 1.0,
             "radial_basis": {"Tabulated": {"file": spline_file}},
             "atomic_gaussian_width": 100.0,
             "cutoff_function": {"Step": {}},
