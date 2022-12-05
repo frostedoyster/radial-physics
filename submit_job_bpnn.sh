@@ -11,11 +11,10 @@
 
 ############## (HYPER)PARAMETERS ##############
 CUTOFF_RADIUS=4.5
-RAD_TR_SELECTION=10
+RAD_TR_SELECTION=8
 RAD_TR_FACTOR=$2 # pass as command line argument
 RAD_TR_DISPLACEMENT=0
 DATASET_PATH='datasets/random-ch4-10k.extxyz' # 'datasets/random-ch4-10k.extxyz' 'datasets/gold.xyz' 'datasets/qm9.xyz'
-DATASET_TARGET_KEY='energy' # 'energy' 'elec._Free_Energy_[eV]' 'U0'
 N_TRAIN_TEST=1000
 E_MAX_2=400
 ################################################
@@ -25,7 +24,7 @@ DATA_SET=${TEMP_VAR//.*} # just some string manipulations
 
 # AUTOMATIC OUTPUT FILE NAME:
 OUTPUT_NAME='TR'$RAD_TR_SELECTION'_F'$RAD_TR_FACTOR'_D'$RAD_TR_DISPLACEMENT'_E'$E_MAX_2'_'$N_TRAIN_TEST'_a'$CUTOFF_RADIUS'_'$DATA_SET.out
-OUTPUT_PATH='/home/ach/radial-physics_new/radial-physics/output_bpnn'
+OUTPUT_PATH='/home/ach/radial-physics_new/radial-physics/output_bpnn/dataset_comp_old_calcs'
 
 # module load gcc
 # module load python
@@ -33,7 +32,7 @@ OUTPUT_PATH='/home/ach/radial-physics_new/radial-physics/output_bpnn'
 
 export OMP_NUM_THREADS=28
 echo STARTING AT `date` > $OUTPUT_PATH/$OUTPUT_NAME
-python -u $1 $CUTOFF_RADIUS $RAD_TR_SELECTION $RAD_TR_FACTOR $DATASET_PATH $DATASET_TARGET_KEY $N_TRAIN_TEST $E_MAX_2 $RAD_TR_DISPLACEMENT\
+python -u $1 $CUTOFF_RADIUS $RAD_TR_SELECTION $RAD_TR_FACTOR $DATASET_PATH $N_TRAIN_TEST $E_MAX_2 $RAD_TR_DISPLACEMENT\
   >> $OUTPUT_PATH/$OUTPUT_NAME
 echo FINISHED at `date` >> $OUTPUT_PATH/$OUTPUT_NAME
 #rm splines/*

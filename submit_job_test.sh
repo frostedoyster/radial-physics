@@ -15,8 +15,7 @@ RAD_TR_SELECTION=10
 RAD_TR_FACTOR=$2 # pass as command line argument
 RAD_TR_DISPLACEMENT=0
 DATASET_PATH='datasets/random-ch4-10k.extxyz' # 'datasets/random-ch4-10k.extxyz' 'datasets/gold.xyz' 'datasets/qm9.xyz'
-DATASET_TARGET_KEY='energy' # 'energy' 'elec._Free_Energy_[eV]' 'U0'
-N_TRAIN_TEST=1000
+N_TRAIN_TEST=100
 E_MAX_2=400
 ################################################
 
@@ -33,7 +32,7 @@ OUTPUT_PATH='/home/ach/radial-physics_new/radial-physics/output/tests'
 
 export OMP_NUM_THREADS=28
 echo STARTING AT `date` > $OUTPUT_PATH/$OUTPUT_NAME
-python -u $1 $CUTOFF_RADIUS $RAD_TR_SELECTION $RAD_TR_FACTOR $DATASET_PATH $DATASET_TARGET_KEY $N_TRAIN_TEST $E_MAX_2 $RAD_TR_DISPLACEMENT\
+python -u $1 $CUTOFF_RADIUS $RAD_TR_SELECTION $RAD_TR_FACTOR $DATASET_PATH $N_TRAIN_TEST $E_MAX_2 $RAD_TR_DISPLACEMENT\
   >> $OUTPUT_PATH/$OUTPUT_NAME
 echo FINISHED at `date` >> $OUTPUT_PATH/$OUTPUT_NAME
 #rm splines/*

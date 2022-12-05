@@ -31,11 +31,18 @@ a = float(sys.argv[1])
 rad_tr_selection = float(sys.argv[2])
 rad_tr_factor = float(sys.argv[3])
 DATASET_PATH = sys.argv[4]
-TARGET_KEY = sys.argv[5]
-n_train = int(sys.argv[6])
-n_test = int(sys.argv[6])
-E_max_2 = int(sys.argv[7])
-rad_tr_displacement = float(sys.argv[8])
+n_train = int(sys.argv[5])
+n_test = int(sys.argv[5])
+E_max_2 = int(sys.argv[6])
+rad_tr_displacement = float(sys.argv[7])
+if DATASET_PATH == 'datasets/qm9.xyz':
+    TARGET_KEY = 'U0'
+elif DATASET_PATH == 'datasets/random-ch4-10k.extxyz':
+    TARGET_KEY = 'energy'
+elif DATASET_PATH == 'datasets/gold.xyz':
+    TARGET_KEY = 'elec._Free_Energy_[eV]'
+else:
+    print("Dataset not found")
 ###########################################
 ###########################################
 

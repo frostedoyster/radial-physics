@@ -145,7 +145,16 @@ def select_radial_transform(r, factor, a, rad_tr_dis, rad_tr_selection):
         radial_transform = radial_transform_11(r, factor, a, rad_tr_dis) 
     elif rad_tr_selection == 12:
         radial_transform = radial_transform_12(r, factor, a, rad_tr_dis)     
-    # normalized versions below, names appended by 000
+        ### Questionable transforms:
+    elif rad_tr_selection == 9999:
+        radial_transform = radial_transform_9999(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 1010:
+        radial_transform = radial_transform_1010(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 1111:
+        radial_transform = radial_transform_1111(r, factor, a, rad_tr_dis) 
+    elif rad_tr_selection == 1212:
+        radial_transform = radial_transform_1212(r, factor, a, rad_tr_dis)  
+        ### normalized versions below, names appended by 000
     elif rad_tr_selection == 2000:
         radial_transform = radial_transform_2000(r, factor, a)
     elif rad_tr_selection == 3000:
