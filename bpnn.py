@@ -85,7 +85,7 @@ hypers_ps = {
     "max_radial": 8,
     "max_angular": 6,
     "atomic_gaussian_width": 0.2,
-    "center_atom_weight": 0.0,
+    "center_atom_weight": 1.0,
     "radial_basis": {"Gto": {"spline_accuracy": 1e-8}},
     "cutoff_function": {"ShiftedCosine": {"width": 0.5}},
     "radial_scaling":  {"Willatt2018": { "scale": 2.0, "rate": 2.0, "exponent": 6}},

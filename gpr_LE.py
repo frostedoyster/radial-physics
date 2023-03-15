@@ -1,4 +1,5 @@
 import torch
+torch.set_default_dtype(torch.float64)
 import numpy as np
 import scipy as sp
 from scipy import optimize
@@ -32,7 +33,7 @@ rad_tr_selection = float(sys.argv[2])
 rad_tr_factor = float(sys.argv[3])
 DATASET_PATH = sys.argv[4]
 n_train = int(sys.argv[5])
-n_test = int(sys.argv[5])
+n_test = 1000 #int(sys.argv[5])
 E_max_2 = int(sys.argv[6])
 rad_tr_displacement = float(sys.argv[7])
 if DATASET_PATH == 'datasets/qm9.xyz':
@@ -51,8 +52,8 @@ date_time = date_time.strftime("%m-%d-%Y-%H-%M-%S-%f")
 spline_path = "splines/splines-" + date_time + ".txt"
 
 # torch.set_default_dtype(torch.float64)
-# torch.manual_seed(1234)
-RANDOM_SEED = 1000
+# torch.manual_seed(6666)
+RANDOM_SEED = 6666
 np.random.seed(RANDOM_SEED)
 print(f"Random seed: {RANDOM_SEED}", flush = True)
 
@@ -215,13 +216,16 @@ def compute_kernel(first, second):
     for center_species in all_species:
         # if center_species == 1: continue  # UNCOMMENT FOR METHANE DATASET C-ONLY VERSION
         print(f"     Calculating kernels for center species {center_species}", flush = True)
+        print(f"     Calculating kernels for center species {center_species}", flush = True)
         try:
-            structures_first = first.block(a_i=center_species).samples["structure"]
+            # structures_first = first.block(a_i=center_species).samples["structure"]
+            structures_first = torch.tensor(first.block(a_i=center_species).samples["structure"], dtype = torch.long)
         except ValueError:
             print("First does not contain the above center species")
             continue
         try:
-            structures_second = second.block(a_i=center_species).samples["structure"]
+            # structures_second = second.block(a_i=center_species).samples["structure"]
+            structures_second = torch.tensor(second.block(a_i=center_species).samples["structure"], dtype = torch.long)
         except ValueError:
             print("Second does not contain the above center species")
             continue
@@ -231,14 +235,16 @@ def compute_kernel(first, second):
         center_kernel = first.block(a_i=center_species).values @ second.block(a_i=center_species).values.T
         center_kernel = center_kernel**2
 
-
+        '''
         for i_1 in tqdm.tqdm(range(len_first)): ## Added this for debug mode
             for i_2 in range(len_second):
                 structure_kernel[structures_first[i_1], structures_second[i_2]] += center_kernel[i_1, i_2]
-        # for i_1 in range(len_first):
-        #     for i_2 in range(len_second):
-        #         structure_kernel[structures_first[i_1], structures_second[i_2]] += center_kernel[i_1, i_2]
-
+        '''
+        temp = torch.zeros((structure_kernel.shape[0], center_kernel.shape[1]))
+        print("Beginning first index add...")
+        temp.index_add_(dim=0, index=structures_first, source=center_kernel)
+        print("Beginning second index add...")
+        structure_kernel.index_add_(dim=1, index=structures_second, source=temp)
     return structure_kernel
 
 print("Computing training kernel")

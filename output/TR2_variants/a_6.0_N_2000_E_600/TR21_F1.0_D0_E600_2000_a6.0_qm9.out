@@ -1,0 +1,127 @@
+STARTING AT Wed Dec 14 07:17:04 CET 2022
+Random seed: 1000
+7 18
+Reading dataset
+Shuffling and extracting from dataset (length: 133885)
+Shuffling and extraction done
+Calculating power spectrum
+Expansion coefficients done
+Computing training kernel
+     Calculating kernels for center species 1
+     Calculating kernels for center species 1
+Beginning first index add...
+Beginning second index add...
+     Calculating kernels for center species 6
+     Calculating kernels for center species 6
+Beginning first index add...
+Beginning second index add...
+     Calculating kernels for center species 7
+     Calculating kernels for center species 7
+Beginning first index add...
+Beginning second index add...
+     Calculating kernels for center species 8
+     Calculating kernels for center species 8
+Beginning first index add...
+Beginning second index add...
+     Calculating kernels for center species 9
+     Calculating kernels for center species 9
+Beginning first index add...
+Beginning second index add...
+Training kernel done
+Computing test kernel
+     Calculating kernels for center species 1
+     Calculating kernels for center species 1
+Beginning first index add...
+Beginning second index add...
+     Calculating kernels for center species 6
+     Calculating kernels for center species 6
+Beginning first index add...
+Beginning second index add...
+     Calculating kernels for center species 7
+     Calculating kernels for center species 7
+Beginning first index add...
+Beginning second index add...
+     Calculating kernels for center species 8
+     Calculating kernels for center species 8
+Beginning first index add...
+Beginning second index add...
+     Calculating kernels for center species 9
+     Calculating kernels for center species 9
+Beginning first index add...
+Beginning second index add...
+Test kernel done
+Calculating composition features
+Composition features done
+-8.0 2.2515157470703127
+-7.8 2.2515157470703127
+-7.6 2.2515157470703127
+-7.4 2.2515157470703127
+-7.2 2.2515157470703127
+-7.0 2.2515157470703127
+-6.8 2.261645935058594
+-6.6 2.235677917480469
+-6.4 2.2888056030273436
+-6.2 2.26406494140625
+-6.0 2.2420276489257813
+-5.8 2.2425743408203127
+-5.6 2.252753173828125
+-5.4 2.2697833251953123
+-5.199999999999999 2.251072998046875
+-5.0 2.242944549560547
+-4.8 2.2298233642578125
+-4.6 2.2258564453125
+-4.4 2.2188672943115235
+-4.199999999999999 2.2198673858642577
+-4.0 2.2083795318603516
+-3.8 2.2011139068603516
+-3.5999999999999996 2.1958819427490233
+-3.3999999999999995 2.1868980255126953
+-3.1999999999999993 2.1809417572021483
+-3.0 2.222212066650391
+-2.8 2.219215835571289
+-2.5999999999999996 2.260200225830078
+-2.3999999999999995 2.333838684082031
+-2.1999999999999993 2.4305919189453125
+-2.0 2.554218200683594
+-1.7999999999999998 2.713370361328125
+-1.5999999999999996 2.901241912841797
+-1.3999999999999995 3.1063987426757813
+-1.1999999999999993 3.3391224975585936
+-1.0 3.596943572998047
+-0.7999999999999998 3.8762704772949217
+-0.5999999999999996 4.18676986694336
+-0.39999999999999947 4.553128479003906
+-0.1999999999999993 5.013113861083984
+0.0 5.588166473388672
+0.20000000000000107 6.303190673828125
+0.40000000000000036 7.176105590820312
+0.5999999999999996 8.191222229003905
+0.8000000000000007 9.339931701660156
+1.0 10.559174255371094
+1.200000000000001 11.78906298828125
+1.4000000000000004 13.031427490234375
+1.6000000000000014 14.267031982421875
+1.8000000000000007 15.469509765625
+2.0 16.608377685546873
+2.200000000000001 17.63966613769531
+2.4000000000000004 18.48856140136719
+2.6000000000000014 19.157782348632814
+2.8000000000000007 19.660163818359376
+3.0 20.02806042480469
+3.200000000000001 20.286572143554686
+3.4000000000000004 20.46350280761719
+3.6000000000000014 20.58386022949219
+3.8000000000000007 20.664406982421873
+4.0 20.718003784179686
+Result sigma optimization:  -3.1999999999999993 2.1809417572021483
+E_max_2 =  600
+Cutoff Radius =  6.0
+Selected Radial Transform =  21.0
+factor =  1.0
+displacement =  0.0
+dataset =  datasets/qm9.xyz
+n_train =  2000
+n_test =  2000
+Train RMSE: 0.755882740020752 [Train MAE: 0.5953257083892822]
+Test RMSE: 3.1751997470855713 [Test MAE: 2.031102180480957]
+FINISHED at Wed Dec 14 07:18:47 CET 2022

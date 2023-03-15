@@ -3,7 +3,7 @@ DATASETS=("random-ch4-10k" "gold" "qm9") ## dataset array # CH4 was done by hand
 
 for j in ${DATASETS[@]};do # loop over datasets
     echo $j
-    for i in 1 2 3 4 5 6 7 8
+    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13
     do
         grep 'factor' TR$i"_"*_$j.out | awk '{print $3}' > Factors_RT$i'_'$j ## extract factors
         grep 'Test RMSE' TR$i"_"*_$j.out | awk '{print $9}' > Test_RMSE_RT$i'_'$j ## extract RMSE

@@ -1,4 +1,4 @@
-STARTING AT Sat Nov 26 16:23:20 CET 2022
+STARTING AT Fri Dec 9 02:30:40 CET 2022
 CUDA is available:  False
 Random seed: 1000
 6 14
@@ -31,69 +31,93 @@ Creating datasets and dataloaders
 800
 900
 nfeat: 218
-Epoch 00315: reducing learning rate of group 0 to 1.0000e-04.
-Epoch 00149: reducing learning rate of group 0 to 1.0000e-05.
-Epoch 00088: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00503: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 00079: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 00117: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00094: reducing learning rate of group 0 to 1.0000e-07.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-08.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
+Very small learning rate reached: 1e-12
+Train error minimum for model run no. 1: 3.3384102323768827 [MAE: 2.6019925518035887]
+Test error minimum for model run no. 1:  12.7695161996066 [MAE: 6.781470407485962]
+Epoch 00338: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 00311: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 00172: reducing learning rate of group 0 to 1.0000e-06.
 Epoch 00110: reducing learning rate of group 0 to 1.0000e-07.
-Epoch 00096: reducing learning rate of group 0 to 1.0000e-08.
+Epoch 00053: reducing learning rate of group 0 to 1.0000e-08.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
 Very small learning rate reached: 1e-12
-Train error minimum for model run no. 1: 4.524239430868566 [MAE: 3.403175455093384]
-Test error minimum for model run no. 1:  12.317392775864619 [MAE: 6.544488563537597]
-Epoch 00385: reducing learning rate of group 0 to 1.0000e-04.
-Epoch 00099: reducing learning rate of group 0 to 1.0000e-05.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-06.
-Epoch 00054: reducing learning rate of group 0 to 1.0000e-07.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-08.
+Train error minimum for model run no. 2: 4.46003398429 [MAE: 3.3192021083831786]
+Test error minimum for model run no. 2:  11.0993737618032 [MAE: 6.421871187210083]
+Epoch 00408: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 00144: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 00779: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00337: reducing learning rate of group 0 to 1.0000e-07.
+Epoch 00063: reducing learning rate of group 0 to 1.0000e-08.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
 Very small learning rate reached: 1e-12
-Train error minimum for model run no. 2: 4.153174660459686 [MAE: 3.2147292823791505]
-Test error minimum for model run no. 2:  9.84192356102726 [MAE: 6.066588180541992]
-Epoch 00268: reducing learning rate of group 0 to 1.0000e-04.
-Epoch 00545: reducing learning rate of group 0 to 1.0000e-05.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-06.
-Epoch 00053: reducing learning rate of group 0 to 1.0000e-07.
-Epoch 00113: reducing learning rate of group 0 to 1.0000e-08.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
-Very small learning rate reached: 1e-12
-Train error minimum for model run no. 3: 4.323073363636184 [MAE: 3.3207243881225588]
-Test error minimum for model run no. 3:  10.148881024096191 [MAE: 6.009636009216309]
-Epoch 00273: reducing learning rate of group 0 to 1.0000e-04.
-Epoch 00085: reducing learning rate of group 0 to 1.0000e-05.
-Epoch 00096: reducing learning rate of group 0 to 1.0000e-06.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-07.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-08.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
-Very small learning rate reached: 1e-12
-Train error minimum for model run no. 4: 4.954529647598314 [MAE: 3.70327774810791]
-Test error minimum for model run no. 4:  12.929230344572296 [MAE: 7.045788330078125]
-Epoch 00312: reducing learning rate of group 0 to 1.0000e-04.
-Epoch 00054: reducing learning rate of group 0 to 1.0000e-05.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-06.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-07.
-Epoch 00071: reducing learning rate of group 0 to 1.0000e-08.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
-Very small learning rate reached: 1e-12
-Train error minimum for model run no. 5: 4.543383528715968 [MAE: 3.394149715423584]
-Test error minimum for model run no. 5:  12.223321044866458 [MAE: 6.608202489852905]
-Epoch 00363: reducing learning rate of group 0 to 1.0000e-04.
+Train error minimum for model run no. 3: 3.6650424554871632 [MAE: 2.855450044631958]
+Test error minimum for model run no. 3:  12.546023890833316 [MAE: 6.653401786804199]
+Epoch 00447: reducing learning rate of group 0 to 1.0000e-04.
 Epoch 00053: reducing learning rate of group 0 to 1.0000e-05.
-Epoch 00062: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00370: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-07.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-08.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
+Very small learning rate reached: 1e-12
+Train error minimum for model run no. 4: 3.7800255666604867 [MAE: 2.981244203567505]
+Test error minimum for model run no. 4:  12.596034595237267 [MAE: 6.694052236557007]
+Epoch 00449: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 00296: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 00420: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00104: reducing learning rate of group 0 to 1.0000e-07.
+Epoch 00089: reducing learning rate of group 0 to 1.0000e-08.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
+Very small learning rate reached: 1e-12
+Train error minimum for model run no. 5: 3.4744610885876415 [MAE: 2.676402572631836]
+Test error minimum for model run no. 5:  10.882307182722817 [MAE: 6.1838448600769045]
+Epoch 00507: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 00084: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 00054: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00055: reducing learning rate of group 0 to 1.0000e-07.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-08.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
+Very small learning rate reached: 1e-12
+Train error minimum for model run no. 6: 3.2160206075940407 [MAE: 2.4874150714874266]
+Test error minimum for model run no. 6:  11.964548782404137 [MAE: 6.467947999954224]
+Epoch 00527: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 00106: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 00129: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-07.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-08.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
+Very small learning rate reached: 1e-12
+Train error minimum for model run no. 7: 3.326500554903375 [MAE: 2.609537817955017]
+Test error minimum for model run no. 7:  13.459386552319021 [MAE: 6.667263566970825]
+Epoch 00456: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 00392: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 00109: reducing learning rate of group 0 to 1.0000e-06.
 Epoch 00147: reducing learning rate of group 0 to 1.0000e-07.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-08.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
@@ -101,56 +125,32 @@ Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
 Very small learning rate reached: 1e-12
-Train error minimum for model run no. 6: 4.434452283856519 [MAE: 3.389567859649658]
-Test error minimum for model run no. 6:  10.075701658365348 [MAE: 5.877962169647216]
-Epoch 00357: reducing learning rate of group 0 to 1.0000e-04.
-Epoch 00060: reducing learning rate of group 0 to 1.0000e-05.
-Epoch 00108: reducing learning rate of group 0 to 1.0000e-06.
+Train error minimum for model run no. 8: 3.551086957304569 [MAE: 2.7293261127471924]
+Test error minimum for model run no. 8:  10.828136813334837 [MAE: 6.0960673866271975]
+Epoch 00450: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 00098: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 00121: reducing learning rate of group 0 to 1.0000e-06.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-07.
-Epoch 00060: reducing learning rate of group 0 to 1.0000e-08.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
-Very small learning rate reached: 1e-12
-Train error minimum for model run no. 7: 4.318493302661949 [MAE: 3.281775993347168]
-Test error minimum for model run no. 7:  10.646305761994094 [MAE: 6.282302890777588]
-Epoch 00296: reducing learning rate of group 0 to 1.0000e-04.
-Epoch 00168: reducing learning rate of group 0 to 1.0000e-05.
-Epoch 00054: reducing learning rate of group 0 to 1.0000e-06.
-Epoch 00112: reducing learning rate of group 0 to 1.0000e-07.
-Epoch 00091: reducing learning rate of group 0 to 1.0000e-08.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
-Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
-Very small learning rate reached: 1e-12
-Train error minimum for model run no. 8: 4.576736563787597 [MAE: 3.4146311168670653]
-Test error minimum for model run no. 8:  12.192032413867604 [MAE: 6.57114472579956]
-Epoch 00331: reducing learning rate of group 0 to 1.0000e-04.
-Epoch 00056: reducing learning rate of group 0 to 1.0000e-05.
-Epoch 00085: reducing learning rate of group 0 to 1.0000e-06.
-Epoch 00079: reducing learning rate of group 0 to 1.0000e-07.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-08.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
 Very small learning rate reached: 1e-12
-Train error minimum for model run no. 9: 4.5233352688584 [MAE: 3.4004790391921995]
-Test error minimum for model run no. 9:  12.337153872317979 [MAE: 6.584971952438354]
-Epoch 00295: reducing learning rate of group 0 to 1.0000e-04.
-Epoch 00257: reducing learning rate of group 0 to 1.0000e-05.
-Epoch 00242: reducing learning rate of group 0 to 1.0000e-06.
-Epoch 00343: reducing learning rate of group 0 to 1.0000e-07.
-Epoch 00169: reducing learning rate of group 0 to 1.0000e-08.
+Train error minimum for model run no. 9: 3.599462276671734 [MAE: 2.8712036390304565]
+Test error minimum for model run no. 9:  13.854909048342902 [MAE: 6.817006958007813]
+Epoch 00408: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 00627: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 00315: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00055: reducing learning rate of group 0 to 1.0000e-07.
+Epoch 00052: reducing learning rate of group 0 to 1.0000e-08.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-09.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-10.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-11.
 Epoch 00052: reducing learning rate of group 0 to 1.0000e-12.
 Very small learning rate reached: 1e-12
-Train error minimum for model run no. 10: 4.534871830290922 [MAE: 3.388081512451172]
-Test error minimum for model run no. 10:  12.362309375677976 [MAE: 6.857804964065552]
+Train error minimum for model run no. 10: 3.2699637605543033 [MAE: 2.541745906829834]
+Test error minimum for model run no. 10:  13.53553465380137 [MAE: 6.527979307174682]
 E_max_2 =  400
 Cutoff Radius =  4.5
 Selected Radial Transform =  8.0
@@ -159,6 +159,6 @@ displacement =  0.0
 dataset =  datasets/random-ch4-10k.extxyz
 n_train =  1000
 n_test =  1000
-Train error averaged over all models Train RMSE:  4.488628988073411 [Train MAE: 3.391059211063385]
-Test error averaged over all models Test RMSE: 11.507425183264985 [Test MAE: 6.44488902759552]
-FINISHED at Sat Nov 26 22:46:10 CET 2022
+Train error averaged over all models Train RMSE:  3.56810074844302 [Train MAE: 2.7673520029068]
+Test error averaged over all models Test RMSE: 12.353577148040548 [Test MAE: 6.53109056968689]
+FINISHED at Fri Dec 9 07:59:44 CET 2022

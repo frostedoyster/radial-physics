@@ -53,7 +53,8 @@ date_time = datetime.now()
 date_time = date_time.strftime("%m-%d-%Y-%H-%M-%S-%f")
 spline_path = "splines/splines-" + date_time + ".txt"
 
-torch.set_num_threads(32)
+torch.set_default_dtype(torch.float64)
+torch.set_num_threads(70)
 print("CUDA is available: ", torch.cuda.is_available())  # See if we can use a GPU
 if torch.cuda.is_available():
     device = torch.device("cuda")
@@ -226,7 +227,7 @@ hypers_spherical_expansion = {
         "cutoff": a,
         "max_radial": int(n_max),
         "max_angular": int(l_max),
-        "center_atom_weight": 0.0,
+        "center_atom_weight": 1.0,
         "radial_basis": {"Tabulated": {"file": spline_path}},
         "atomic_gaussian_width": 100.0,
         "cutoff_function": {"Step": {}},
@@ -289,10 +290,10 @@ class Network(nn.Module):
         for species in all_species:  # For each element, create a NN.
             self.NNs[str(species)] = nn.ModuleList()  # Initialise a list that will contain all the layers.
             # NNs[str(species)].append(nn.Linear(nfeat, 1, dtype = torch.float32, bias = False))
-            self.NNs[str(species)].append(nn.Linear(nfeat, nneurons[0], dtype = torch.float32))  # Create transformation between input layer and first hidden layer.
+            self.NNs[str(species)].append(nn.Linear(nfeat, nneurons[0]))  # Create transformation between input layer and first hidden layer.
             for j in range(nlayers-1):
-                self.NNs[str(species)].append(nn.Linear(nneurons[j], nneurons[j+1], dtype = torch.float32))  # Create transformations between hidden layers..
-            self.NNs[str(species)].append(nn.Linear(nneurons[nlayers-1], 1, dtype = torch.float32))  # Create tranformation between last hidden layer and output layer.
+                self.NNs[str(species)].append(nn.Linear(nneurons[j], nneurons[j+1]))  # Create transformations between hidden layers..
+            self.NNs[str(species)].append(nn.Linear(nneurons[nlayers-1], 1))  # Create tranformation between last hidden layer and output layer.
 
     def forward(self, tensor_map, original_indices):
 

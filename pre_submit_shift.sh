@@ -7,7 +7,7 @@ for j in 0.0 0.1 0.2 0.3 0.4 #shift
 do
     for i in 1.4 1.6 1.8 2.0 2.2 #factor
     do
-        sbatch submit_job_shift.sh gpr_LE.py $i $j
+        sbatch sj_shift.sh gpr_LE.py $i $j
         echo "Factor $i Shift $j"
         sleep 0.3
     done
